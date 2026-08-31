@@ -1,0 +1,13 @@
+ÁLIBI v0.4.0 — MOBILE TEST / PRO WORD ENGINE
+
+Abra index.html para testar.
+No Windows, você também pode usar INICIAR_TESTE.bat.
+
+Principais mudanças:
+- 18 mega-temas, todos com mais de 300 termos.
+- 6.441 termos somados entre os temas.
+- pares nunca cruzam microgrupos semânticos.
+- Insano usa relações mais próximas do mesmo microgrupo.
+- cada palavra usada fica bloqueada por 3 horas, inclusive em novas partidas.
+- 2 segundos de proteção quando o celular passa para o próximo jogador.
+- 5 segundos de revelação com o contador sempre visível acima do card.

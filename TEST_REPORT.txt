@@ -1,0 +1,32 @@
+ÁLIBI v0.4.0 — TEST REPORT
+
+Temas: 18
+Termos únicos somados por tema: 6.441
+
+- Filmes: 381 termos
+- Séries: 423 termos
+- Animes: 467 termos
+- Jogos: 431 termos
+- Desenhos & animações: 404 termos
+- Comidas: 380 termos
+- Bebidas: 380 termos
+- Objetos do dia a dia: 347 termos
+- Tecnologia & internet: 328 termos
+- Animais: 325 termos
+- Esportes & futebol: 332 termos
+- Música & artistas: 342 termos
+- Brasil & viagem: 326 termos
+- Transportes & veículos: 315 termos
+- Escola & profissões: 307 termos
+- Roupas & estilo: 311 termos
+- Natureza & ciência: 306 termos
+- Marcas & produtos: 336 termos
+
+VALIDAÇÕES:
+OK — todos os temas têm > 300 termos únicos.
+OK — “Taco” removido.
+OK — Garrafa e Guarda-chuva nunca pertencem ao mesmo grupo semântico.
+OK — FNAF e Overwatch nunca pertencem ao mesmo grupo semântico.
+OK — histórico bloqueia cada PALAVRA por 3 horas, não apenas o par.
+OK — troca de jogador possui trava obrigatória de 2 segundos.
+OK — contador de 5 segundos foi movido para fora do card.

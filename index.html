@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#0b0b10">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Álibi">
+  <title>ÁLIBI — Jogo de blefe</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+  <main id="app" class="app-shell">
+    <header id="topbar" class="topbar hidden">
+      <button id="backBtn" class="icon-btn" type="button" aria-label="Voltar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 5 8.5 12l7 7"/></svg>
+      </button>
+      <div class="topbar-copy"><span id="topKicker"></span><strong id="topTitle"></strong></div>
+      <button id="soundBtn" class="icon-btn" type="button" aria-label="Som">
+        <svg class="sound-on" viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6L8 10H4Z"/><path d="M16 9c1 1 1 5 0 6M18.5 6.5c3 3 3 8 0 11"/></svg>
+        <svg class="sound-off" viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6L8 10H4Z"/><path d="m17 9 5 6M22 9l-5 6"/></svg>
+      </button>
+    </header>
+
+    <section id="screen-home" class="screen screen-home active" data-screen="home">
+      <div class="home-art" aria-hidden="true">
+        <div class="hero-halo hero-halo-a"></div>
+        <div class="hero-halo hero-halo-b"></div>
+        <div class="hero-card hero-card-back"></div>
+        <div class="hero-card hero-card-mid"></div>
+        <img class="brand-hero-mark" src="assets/brand/alibi-mark.png" alt="">
+        <div class="hero-spark spark-a"></div><div class="hero-spark spark-b"></div><div class="hero-spark spark-c"></div>
+      </div>
+      <div class="home-copy">
+        <div class="brand-pill"><span class="brand-dot"></span> JOGO DE BLEFE LOCAL</div>
+        <h1>ÁLIBI</h1>
+        <p>Mesma roda. Palavras quase iguais. Um bom álibi pode salvar você.</p>
+      </div>
+      <div class="home-actions">
+        <button id="playBtn" class="btn btn-primary btn-xl" type="button"><span>Jogar</span><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button>
+        <button id="themesBtn" class="btn btn-glass btn-xl" type="button"><span>Escolher temas</span><span id="homeThemeCount" class="btn-meta">Todos</span></button>
+      </div>
+      <div class="home-stats"><div><strong id="themeStat">18</strong><span>temas</span></div><i></i><div><strong id="termStat">5.700+</strong><span>palavras</span></div><i></i><div><strong>Offline</strong><span>um celular</span></div></div>
+      <p class="version">PREMIUM TEST · 0.4.0</p>
+    </section>
+
+    <section id="screen-themes" class="screen" data-screen="themes">
+      <div class="section-intro"><p>Escolha universos que a galera conhece</p><h2>Escolha os temas</h2><div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg><input id="themeSearch" type="search" placeholder="Buscar tema..." autocomplete="off"></div></div>
+      <div class="selection-bar"><button id="selectAllThemes" type="button">Selecionar todos</button><span id="selectedThemesText">18 selecionados</span><button id="clearThemes" type="button">Limpar</button></div>
+      <div id="themesGrid" class="themes-grid"></div>
+      <div class="sticky-action"><button id="themesDoneBtn" class="btn btn-primary btn-xl" type="button">Continuar com os temas</button></div>
+    </section>
+
+    <section id="screen-setup" class="screen" data-screen="setup">
+      <div class="section-intro"><p>Prepare a roda</p><h2>Quem vai jogar?</h2><span class="section-note">Sem limite fixo de jogadores. Adicione quantos couberem na brincadeira.</span></div>
+      <form id="addPlayerForm" class="add-player-form"><input id="playerNameInput" maxlength="28" placeholder="Nome do jogador" autocomplete="off"><button type="submit" aria-label="Adicionar jogador"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></form>
+      <div id="playersList" class="players-list"></div>
+      <button id="quickPlayers" class="text-btn" type="button">Adicionar grupo de teste</button>
+
+      <div class="setup-section-title"><span>Configurações da partida</span><button id="resetConfig" type="button">Padrão</button></div>
+      <div class="config-grid">
+        <label class="config-card"><span>Impostores</span><strong id="impostorValue">1</strong><input id="impostorRange" type="range" min="1" max="1" value="1"></label>
+        <label class="config-card"><span>Tempo</span><strong id="timeValue">10 min</strong><input id="timeRange" type="range" min="3" max="30" value="10"></label>
+        <label class="config-card"><span>Vidas civis</span><strong id="livesValue">2</strong><input id="livesRange" type="range" min="1" max="6" value="2"></label>
+        <label class="config-card"><span>Voltas</span><strong id="roundsValue">2</strong><input id="roundsRange" type="range" min="1" max="5" value="2"></label>
+      </div>
+      <div class="difficulty-block"><span class="field-label">Grau de dificuldade</span><div id="difficultySeg" class="segmented"><button data-difficulty="easy" type="button">Fácil</button><button data-difficulty="normal" class="active" type="button">Normal</button><button data-difficulty="hard" type="button">Difícil</button><button data-difficulty="insane" type="button">Insano</button></div><p id="difficultyHelp">Palavras relacionadas, mas ainda distinguíveis.</p></div>
+      <div class="toggles">
+        <label class="toggle-row"><div><strong>Revelar papel do eliminado</strong><span>Mostra se era civil ou impostor após a votação.</span></div><input id="revealRoleToggle" type="checkbox" checked><i></i></label>
+        <label class="toggle-row"><div><strong>Ordem secreta na votação</strong><span>Cada pessoa vota com a tela protegida antes de passar o celular.</span></div><input id="secretVoteToggle" type="checkbox" checked><i></i></label>
+        <div class="repeat-protection"><div><strong>Proteção anti-repetição</strong><span>Nenhuma palavra usada volta por 3 horas, mesmo em uma nova partida.</span></div><div class="repeat-clock"><small>RENOVA EM</small><strong id="repeatWindowText">03:00:00</strong></div></div>
+      </div>
+      <div class="sticky-action"><button id="startSetupBtn" class="btn btn-primary btn-xl" type="button">Distribuir palavras</button><p id="setupWarning" class="inline-warning"></p></div>
+    </section>
+
+    <section id="screen-reveal" class="screen reveal-screen" data-screen="reveal">
+      <div class="reveal-progress"><span id="revealProgressText">1 de 4</span><div><i id="revealProgressBar"></i></div></div>
+      <div class="pass-copy"><p>Passe o celular para</p><h2 id="revealPlayerName">Jogador</h2><span>Ninguém além dessa pessoa deve olhar a tela.</span></div>
+      <div id="revealStatus" class="reveal-status" aria-live="polite"><span id="revealStatusLabel">PRONTO PARA REVELAR</span><strong id="revealStatusCount">—</strong></div>
+      <div id="revealCard" class="reveal-card" aria-label="Card secreto da palavra">
+        <div class="reveal-under">
+          <span id="roleKicker" class="role-kicker">SEU PAPEL</span><h3 id="roleName">CIVIL</h3><div class="secret-word"><span>Sua palavra</span><strong id="secretWord">PALAVRA</strong></div><p id="roleHint"></p>
+        </div>
+        <div id="revealCover" class="reveal-cover">
+          <div class="cover-noise"></div><div class="cover-symbol"><svg viewBox="0 0 100 100"><path d="M22 28c8-7 20-11 28-11s20 4 28 11l-6 36C65 76 57 83 50 84c-7-1-15-8-22-20l-6-36Z"/><path d="M33 43c7-5 13-6 17-2-5 8-11 11-17 2ZM67 43c-7-5-13-6-17-2 5 8 11 11 17 2Z"/></svg></div><strong id="coverPlayerName">Jogador</strong><span>Use o botão abaixo quando ninguém estiver olhando.</span><div class="cover-lock-line"><i></i><strong>PALAVRA PROTEGIDA</strong><i></i></div></div>
+      </div>
+      <button id="revealToggleBtn" class="btn btn-primary btn-xl reveal-fallback" type="button"><span>Pressione para revelar</span><small>fica visível por 5 segundos</small></button>
+    </section>
+
+    <section id="screen-starter" class="screen center-screen" data-screen="starter">
+      <div class="starter-mark"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="48"/><path d="M60 22v13M60 85v13M22 60h13M85 60h13"/><circle cx="60" cy="60" r="14"/></svg></div><p class="eyebrow">QUEM COMEÇA?</p><h2 id="starterName">Ana</h2><p id="starterInfo">Depois dela, siga no sentido horário.</p><div class="starter-rules"><span id="starterRounds">2 voltas</span><i></i><span id="starterTimer">10 minutos</span><i></i><span id="starterLives">2 vidas</span></div><button id="beginRoundBtn" class="btn btn-primary btn-xl" type="button">Começar a discussão</button>
+    </section>
+
+    <section id="screen-round" class="screen round-screen" data-screen="round">
+      <div class="round-head"><div><span>DISCUSSÃO</span><strong id="roundCounter">Volta 1 de 2</strong></div><button id="pauseBtn" class="round-icon" type="button" aria-label="Pausar"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button></div>
+      <div class="timer-ring"><svg viewBox="0 0 220 220"><circle class="timer-track" cx="110" cy="110" r="92"/><circle id="timerArc" class="timer-arc" cx="110" cy="110" r="92"/></svg><div class="timer-copy"><span id="timerState">TEMPO RESTANTE</span><strong id="timerText">10:00</strong><small id="roundStarter">Começou: Ana</small></div></div>
+      <div class="life-panel"><div><span>Vidas civis</span><strong id="livesText">2 restantes</strong></div><div id="lifePips" class="life-pips"></div></div>
+      <div class="round-tip"><span>DICA DA RODADA</span><p id="roundTip">Não diga a palavra diretamente. Dê pistas que só quem conhece o contexto entenderia.</p></div>
+      <div class="round-actions"><button id="nextRoundBtn" class="btn btn-glass btn-xl" type="button">Finalizar volta</button><button id="goVoteBtn" class="btn btn-primary btn-xl" type="button">Ir para votação</button></div>
+    </section>
+
+    <section id="screen-vote-pass" class="screen center-screen" data-screen="vote-pass">
+      <div class="vote-shield"><svg viewBox="0 0 120 120"><path d="M60 13 100 29v28c0 25-16 43-40 51-24-8-40-26-40-51V29l40-16Z"/><path d="m41 60 12 12 27-29"/></svg></div><p class="eyebrow">VOTAÇÃO SECRETA</p><h2>Vez de <span id="voterName">Ana</span></h2><p>Entregue o celular para essa pessoa. Só ela deve ver a próxima tela.</p><button id="openVoteBtn" class="btn btn-primary btn-xl" type="button">Abrir votação</button>
+    </section>
+
+    <section id="screen-vote" class="screen" data-screen="vote">
+      <div class="section-intro vote-intro"><p>Quem parece ser o intruso?</p><h2 id="voteTitle">Escolha uma pessoa</h2><span class="section-note">Seu voto fica oculto assim que você confirmar.</span></div>
+      <div id="voteGrid" class="vote-grid"></div>
+      <div class="sticky-action"><button id="confirmVoteBtn" class="btn btn-primary btn-xl" type="button" disabled>Confirmar voto</button></div>
+    </section>
+
+    <section id="screen-result" class="screen center-screen" data-screen="result">
+      <div id="resultVisual" class="result-visual"><div class="result-ring"></div><div class="result-avatar" id="resultAvatar">A</div></div><p id="resultKicker" class="eyebrow">ELIMINADO</p><h2 id="resultName">Ana</h2><p id="resultRoleLine" class="result-role-line"></p><div id="resultLives" class="result-lives"></div><p id="resultMessage" class="result-message"></p><button id="continueAfterResult" class="btn btn-primary btn-xl" type="button">Continuar partida</button>
+    </section>
+
+    <section id="screen-end" class="screen center-screen end-screen" data-screen="end">
+      <div id="endArt" class="end-art"><svg viewBox="0 0 180 180"><path d="M90 17 145 40v40c0 38-23 67-55 83-32-16-55-45-55-83V40l55-23Z"/><path d="M63 87 81 105l39-49"/></svg></div><p id="endKicker" class="eyebrow">FIM DA PARTIDA</p><h2 id="endTitle">Civis venceram</h2><p id="endSubtitle"></p><div id="endReveal" class="end-reveal"></div><div class="end-actions"><button id="playAgainBtn" class="btn btn-primary btn-xl" type="button">Jogar de novo</button><button id="homeBtn" class="btn btn-glass btn-xl" type="button">Tela inicial</button></div>
+    </section>
+
+    <div id="modal" class="modal hidden" role="dialog" aria-modal="true"><div class="modal-card"><h3 id="modalTitle"></h3><p id="modalText"></p><div id="modalActions" class="modal-actions"></div></div></div>
+    <div id="toast" class="toast hidden" aria-live="polite"></div>
+  </main>
+  <script src="js/data.js"></script>
+  <script src="js/pairs.js"></script>
+  <script src="js/app.js"></script>
+  <script>if('serviceWorker' in navigator && location.protocol!=='file:'){addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>
+</body>
+</html>

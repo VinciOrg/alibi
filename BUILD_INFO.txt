@@ -1,8 +1,15 @@
-ÁLIBI v0.4.0 — SEMANTIC LIBRARY REBUILD
-- 18 mega-temas, cada um com mais de 300 termos únicos
-- pareamento hierárquico por microgrupos semânticos
-- modo Insano usa vizinhos do mesmo microgrupo
-- palavras usadas ficam bloqueadas por 3 horas em novas partidas
-- proteção de 2 segundos na troca de jogador
-- revelação de 5 segundos com contador fora do card
-- termo Taco removido do acervo
+ÁLIBI v0.5.1 — 10 MEGA-TEMAS + MICROGRUPOS SEMÂNTICOS
+
+- 10 temas grandes visíveis
+- 1063 microgrupos semânticos internos
+- 6303 termos únicos somados nos 10 temas
+- estrutura pronta para expansão progressiva até 1.000+ termos por tema
+- pares NUNCA cruzam microgrupos
+- dificuldade regula distância dentro do microgrupo
+- bloqueio de palavras por 3 horas preservado
+- microgrupos recentes recebem penalidade para reduzir repetição
+- preferências antigas dos 18 temas são migradas automaticamente
+- ordem de jogadores, revelação de 5s e proteção de 2s preservadas
+
+Versão: 0.5.1
+Build: 6

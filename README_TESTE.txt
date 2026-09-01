@@ -1,10 +1,10 @@
-ÁLIBI v0.4.0 — TESTE MOBILE
+ÁLIBI v0.5.1 — TESTE WEB/PWA
 
-Abra index.html no navegador. Para PWA/cache, use INICIAR_TESTE.bat.
+- 10 mega-temas visíveis.
+- 1.063 microgrupos semânticos internos.
+- 6.303 termos únicos atuais.
+- pares nunca cruzam microgrupos.
+- bloqueio de repetição por 3 horas.
+- preferências dos 18 temas antigos migram automaticamente.
 
-Destaques:
-- 18 temas grandes com 300+ termos cada.
-- Palavras pareadas somente dentro de grupos semânticos relacionados.
-- 5 segundos para memorizar a palavra.
-- 2 segundos de trava ao passar o celular para o próximo jogador.
-- Nenhuma palavra usada se repete por 3 horas.
+Abra index.html por um servidor local ou publique esta pasta em hospedagem estática.

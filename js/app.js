@@ -2,8 +2,23 @@
 'use strict';
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const THEMES=window.INTRUSO_THEMES||[];
-const PREF_KEY='alibi_prefs_v04', USED_TERMS_KEY='alibi_used_terms_v04', REPEAT_WINDOW_MS=3*60*60*1000;
-const difficultyText={easy:'Mesmo assunto, mas com diferença clara. Ideal para quem está aprendendo.',normal:'Mesmo grupo e relação direta, sem ficar óbvio demais.',hard:'Palavras próximas dentro da mesma família semântica.',insane:'Quase gêmeas: variantes ou itens vizinhos do mesmo microgrupo.'};
+const PREF_KEY='alibi_prefs_v05', LEGACY_PREF_KEYS=['alibi_prefs_v04'], USED_TERMS_KEY='alibi_used_terms_v04', REPEAT_WINDOW_MS=3*60*60*1000;
+const VALID_THEME_IDS=new Set(THEMES.map(t=>t.id));
+const THEME_ID_MIGRATION={
+  filmes:'filmes',series:'series',jogos:'jogos',
+  animes:'animes-desenhos',desenhos:'animes-desenhos',
+  comidas:'comidas-bebidas',bebidas:'comidas-bebidas',
+  objetos:'objetos-tecnologia',tecnologia:'objetos-tecnologia',marcas:'objetos-tecnologia',
+  animais:'animais-natureza',natureza:'animais-natureza',
+  esportes:'esportes',musica:'musica',
+  brasil:'cotidiano',transporte:'cotidiano',escola:'cotidiano',roupas:'cotidiano'
+};
+const difficultyText={
+  easy:'Mesmo microgrupo, mas com diferença mais clara entre os termos.',
+  normal:'Relação direta dentro da mesma família semântica.',
+  hard:'Termos próximos dentro do mesmo microgrupo.',
+  insane:'Quase gêmeos: vizinhos ou variantes muito próximas do mesmo microgrupo.'
+};
 const tips=[
   'Não diga a palavra diretamente. Dê pistas que só quem conhece o contexto entenderia.',
   'Uma pista específica demais pode ajudar os civis e também revelar sua palavra.',
@@ -18,9 +33,27 @@ const state={
 };
 
 function loadPrefs(){
-  try{const p=JSON.parse(localStorage.getItem(PREF_KEY)||'null');if(p){Object.assign(state.config,p.config||{});state.sound=p.sound!==false;if(Array.isArray(p.selectedThemes)&&p.selectedThemes.length)p.selectedThemes.forEach(x=>state.selectedThemes.add(x));}}
-  catch(_){ }
-  if(!state.selectedThemes.size) THEMES.forEach(t=>state.selectedThemes.add(t.id));
+  let p=null;
+  try{
+    p=JSON.parse(localStorage.getItem(PREF_KEY)||'null');
+    if(!p){
+      for(const legacyKey of LEGACY_PREF_KEYS){
+        p=JSON.parse(localStorage.getItem(legacyKey)||'null');
+        if(p)break;
+      }
+    }
+    if(p){
+      Object.assign(state.config,p.config||{});
+      state.sound=p.sound!==false;
+      if(Array.isArray(p.selectedThemes)&&p.selectedThemes.length){
+        p.selectedThemes.forEach(oldId=>{
+          const mapped=THEME_ID_MIGRATION[oldId]||oldId;
+          if(VALID_THEME_IDS.has(mapped))state.selectedThemes.add(mapped);
+        });
+      }
+    }
+  }catch(_){}
+  if(!state.selectedThemes.size)THEMES.forEach(t=>state.selectedThemes.add(t.id));
 }
 function savePrefs(){try{localStorage.setItem(PREF_KEY,JSON.stringify({config:state.config,sound:state.sound,selectedThemes:[...state.selectedThemes]}));}catch(_){}}
 function activeScreen(){return $(`.screen[data-screen="${state.screen}"]`)}
@@ -56,7 +89,7 @@ function renderThemes(filter=''){
   const q=filter.trim().toLocaleLowerCase('pt-BR');const grid=$('#themesGrid');grid.innerHTML='';
   THEMES.filter(t=>!q||t.name.toLocaleLowerCase('pt-BR').includes(q)||t.description.toLocaleLowerCase('pt-BR').includes(q)).forEach(t=>{
     const b=document.createElement('button');b.type='button';b.className='theme-card'+(state.selectedThemes.has(t.id)?' selected':'');b.dataset.id=t.id;
-    b.innerHTML=`<div class="theme-art"><img src="${t.art}" alt=""><span class="theme-check"></span></div><div class="theme-copy"><strong>${esc(t.name)}</strong><span>${t.count} opções</span></div>`;
+    b.innerHTML=`<div class="theme-art"><img src="${t.art}" alt=""><span class="theme-check"></span></div><div class="theme-copy"><strong>${esc(t.name)}${t.popular?'<em class="theme-badge">POPULAR</em>':''}</strong><span>${Number(t.count||0).toLocaleString('pt-BR')} termos · ${Number(t.microgroupCount||0)} microgrupos</span></div>`;
     b.addEventListener('click',()=>{tone(590,.04);haptic(10);state.selectedThemes.has(t.id)?state.selectedThemes.delete(t.id):state.selectedThemes.add(t.id);renderThemes($('#themeSearch').value);updateThemeSelection();savePrefs()});grid.appendChild(b);
   });updateThemeSelection();
 }
@@ -89,63 +122,59 @@ function updateRepeatClock(){
   const s=Math.ceil(left/1000),hh=Math.floor(s/3600),mm=Math.floor((s%3600)/60),ss=s%60;
   el.textContent=`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
 }
-function pairKey(a,b){return [normWord(a),normWord(b)].sort().join('|||')}
-function setPairs(items,mode){
-  const out=[];if(!items||items.length<2)return out;
-  if(mode==='adjacent'){
-    for(let i=0;i<items.length-1;i++)out.push([items[i],items[i+1]]);
-    if(items.length>3)for(let i=0;i<items.length-2;i+=2)out.push([items[i],items[i+2]]);
-  }else{
-    for(let i=0;i<items.length;i++)for(let j=i+1;j<items.length;j++)out.push([items[i],items[j]]);
-  }
-  return out;
-}
-function groupCandidates(theme,g,level){
-  const sets=(g.sets||[]).map(s=>[...new Set((s||[]).filter(Boolean))]).filter(s=>s.length>=2);const out=[];
-  const push=(a,b,score)=>{if(!a||!b||normWord(a)===normWord(b))return;out.push({theme,group:g,pair:[a,b],score})};
-  // v0.4 rule: a pair NEVER crosses microsets. A microset is one semantic/type family
-  // (e.g. only Naruto characters, only cola soft drinks, only pizza flavours).
-  // Difficulty changes the DISTANCE inside that family, not the subject itself.
-  if(level==='insane'&&g.insaneSafe===false)return out;
-  sets.forEach(s=>{
-    const n=s.length;
-    if(level==='insane'){
-      for(let i=0;i<n-1;i++)push(s[i],s[i+1],4);
-      if(n>4)for(let i=0;i<n-2;i+=3)push(s[i],s[i+2],3.8);
-    }else if(level==='hard'){
-      const span=Math.max(2,Math.ceil(n/3));
-      for(let i=0;i<n;i++)for(let j=i+1;j<n&&j-i<=span;j++)push(s[i],s[j],3);
-    }else if(level==='normal'){
-      for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)push(s[i],s[j],2);
-    }else{
-      const minGap=Math.max(1,Math.floor(n/2));
-      for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(j-i>=minGap)push(s[i],s[j],1);
-      // Tiny microsets have no “far” pair; keep their only safe relationship.
-      if(!out.length&&n===2)push(s[0],s[1],1);
+function microgroupCandidates(theme,micro,level){
+  const items=[...new Set((micro.items||[]).filter(Boolean))];
+  const out=[];if(items.length<2)return out;
+  if(level==='insane'&&micro.insaneSafe===false)return out;
+
+  const n=items.length,maxGap=Math.max(1,n-1);
+  const ranges={
+    easy:[Math.max(1,Math.ceil(maxGap*.55)),maxGap],
+    normal:[Math.max(1,Math.floor(maxGap*.20)),Math.max(1,Math.ceil(maxGap*.80))],
+    hard:[1,Math.max(1,Math.ceil(maxGap*.42))],
+    insane:[1,Math.max(1,Math.ceil(maxGap*.20))]
+  };
+  const [minGap,maxAllowed]=ranges[level]||ranges.normal;
+  const score={easy:1,normal:2,hard:3,insane:4}[level]||2;
+
+  for(let i=0;i<n;i++){
+    for(let j=i+1;j<n;j++){
+      const gap=j-i;
+      if(gap>=minGap&&gap<=maxAllowed)out.push({theme,micro,pair:[items[i],items[j]],score,gap});
     }
-  });
+  }
+  if(!out.length&&n===2)out.push({theme,micro,pair:[items[0],items[1]],score,gap:1});
   return out;
 }
 function chooseWords(){
   const pool=THEMES.filter(t=>state.selectedThemes.has(t.id));if(!pool.length)throw Error('Selecione pelo menos um tema.');
-  const level=state.config.difficulty||'normal',h=loadWordHistory(),used=new Set(h.terms.map(x=>x.word)),recentGroups=new Map();
-  h.groups.forEach((x,i)=>recentGroups.set(x.key,(recentGroups.get(x.key)||0)+1));
+  const level=state.config.difficulty||'normal',h=loadWordHistory(),used=new Set(h.terms.map(x=>x.word)),recentMicrogroups=new Map();
+  h.groups.forEach(x=>recentMicrogroups.set(x.key,(recentMicrogroups.get(x.key)||0)+1));
+
   let candidates=[];
-  pool.forEach(theme=>(theme.groups||[]).forEach(g=>{const key=`${theme.id}::${g.name}`;groupCandidates(theme,g,level).forEach(c=>{c.groupKey=key;c.recentPenalty=recentGroups.get(key)||0;candidates.push(c)})}));
-  // Strict 3-hour word lock: BOTH words must be fresh.
+  pool.forEach(theme=>(theme.microgroups||[]).forEach(micro=>{
+    const key=`${theme.id}::${micro.id}`;
+    microgroupCandidates(theme,micro,level).forEach(c=>{
+      c.groupKey=key;
+      c.recentPenalty=recentMicrogroups.get(key)||0;
+      candidates.push(c);
+    });
+  }));
+
   candidates=candidates.filter(c=>!used.has(normWord(c.pair[0]))&&!used.has(normWord(c.pair[1])));
   if(!candidates.length)throw Error('As palavras dos temas selecionados já foram usadas nas últimas 3 horas. Escolha mais temas ou aguarde o contador renovar.');
-  // Professional anti-pattern selection: avoid recently used semantic groups and avoid deterministic adjacency.
+
   const minPenalty=Math.min(...candidates.map(c=>c.recentPenalty));
   let shortlist=candidates.filter(c=>c.recentPenalty<=minPenalty+1);
-  shortlist=shuffle(shortlist).slice(0,Math.min(shortlist.length,240));
+  shortlist=shuffle(shortlist).slice(0,Math.min(shortlist.length,320));
+
   const picked=rand(shortlist),pair=picked.pair,theme=picked.theme,flip=Math.random()<.5;
   const civil=flip?pair[1]:pair[0],impostor=flip?pair[0]:pair[1],now=Date.now();
   h.terms.push({word:normWord(civil),label:civil,at:now},{word:normWord(impostor),label:impostor,at:now});
   h.groups.push({key:picked.groupKey,at:now});
-  // Keep storage bounded while preserving the 3h window.
-  h.terms=h.terms.slice(-1200);h.groups=h.groups.slice(-300);saveWordHistory(h);
-  return {theme,civil,impostor,groupName:picked.group.name,similarity:picked.score};
+  h.terms=h.terms.slice(-1800);h.groups=h.groups.slice(-500);saveWordHistory(h);
+
+  return {theme,civil,impostor,groupName:picked.micro.cluster,microgroupId:picked.micro.id,source:picked.micro.source,similarity:picked.score};
 }
 function startGame(){
   if(state.players.length<3){$('#setupWarning').textContent='Adicione pelo menos 3 jogadores.';return}

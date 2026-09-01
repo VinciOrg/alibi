@@ -65,7 +65,7 @@ body.reveal-drag-lock{overflow:hidden!important;overscroll-behavior:none!importa
 .swipe-indicator{display:none!important}
 .reveal-cover>span{max-width:260px;line-height:1.4}
 
-.theme-card[data-id="filmes"] .theme-copy strong:after,.theme-card[data-id="series"] .theme-copy strong:after,.theme-card[data-id="animes"] .theme-copy strong:after,.theme-card[data-id="jogos"] .theme-copy strong:after,.theme-card[data-id="desenhos"] .theme-copy strong:after{content:"POPULAR";display:inline-flex;margin-left:7px;vertical-align:2px;border-radius:99px;padding:3px 5px;background:#8979ff1c;border:1px solid #8979ff30;color:#a99eff;font-size:6px;letter-spacing:.1em}
+
 
 @media(max-width:370px){.brand-hero-mark{width:min(61vw,220px)}.hero-card{width:128px;height:174px}.home-art{min-height:285px}.reveal-time-badge{top:14px;right:14px}}
 @media(prefers-reduced-motion:reduce){.brand-hero-mark,.hero-halo-a,.hero-halo-b,.hero-spark{animation:none!important}}
@@ -75,3 +75,10 @@ body.reveal-drag-lock{overflow:hidden!important;overscroll-behavior:none!importa
 .repeat-protection{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:10px;padding:15px 16px;border:1px solid #30303b;background:#121219;border-radius:18px;text-align:left}.repeat-protection>div:first-child{display:grid;gap:4px}.repeat-protection strong{font-size:12px}.repeat-protection span{font-size:10px;line-height:1.4;color:#7e7e8d}.repeat-clock{min-width:88px;text-align:right}.repeat-clock small{display:block;font-size:7px;letter-spacing:.12em;color:#6f6f7e}.repeat-clock strong{display:block;margin-top:3px;font-size:14px;font-variant-numeric:tabular-nums;color:#d8d4ff}
 .reveal-status{height:54px;margin:0 0 10px;border:1px solid #30303b;background:#111118;border-radius:17px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:relative;z-index:10;box-shadow:0 10px 30px #0004}.reveal-status span{font-size:9px;letter-spacing:.13em;color:#858594;font-weight:800}.reveal-status strong{font-size:22px;font-variant-numeric:tabular-nums;color:#f2efff}.reveal-status.revealing{border-color:#5d5684;background:#181526}.reveal-status.handoff{border-color:#3e4659;background:#12151c}.reveal-status.handoff span{color:#9ca8bd}.reveal-fallback.handoff-lock{background:#171820;border-color:#343745;box-shadow:none}.reveal-fallback.handoff-lock>span{color:#aab1c1}.reveal-fallback.handoff-lock>small{color:#777f91}.reveal-card{margin-bottom:0}.reveal-card.revealed .reveal-cover{transform:translateY(-88%)}
 @media(max-width:370px){.repeat-protection{padding:13px}.repeat-clock{min-width:82px}.reveal-status{height:50px}.reveal-status strong{font-size:19px}}
+
+/* v0.4.5 — theme artwork: preserve the SVG composition on every screen size */
+.theme-art{height:auto!important;aspect-ratio:20/11;min-height:0;background:#0d1018}
+.theme-art img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+@media(max-width:370px){.theme-art{height:auto!important;aspect-ratio:20/11}}
+
+.theme-badge{display:inline-flex;margin-left:7px;vertical-align:2px;border-radius:99px;padding:3px 5px;background:#8979ff1c;border:1px solid #8979ff30;color:#a99eff;font-style:normal;font-size:6px;line-height:1;letter-spacing:.1em}.theme-copy span{line-height:1.35}
